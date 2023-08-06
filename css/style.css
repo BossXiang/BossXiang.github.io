@@ -82,3 +82,20 @@ a:last-child {
 a:hover, a:active {
   color: #d17d00;
 }
+
+.center-box {
+  width: 100%;
+  text-align: center;
+  margin: 30px 0px;
+}
+
+#face {
+  width: 300px;
+  height: 300px;
+  cursor:crosshair;
+}
+
+#counter {
+  font-size: 30px;
+  color: #23ad00;
+}
