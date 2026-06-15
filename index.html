@@ -1,41 +1,1113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Home</title>
-  <link rel="icon" href="assets/icons/t.png" type="image/x-icon">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tom Cheng — Portfolio</title>
+<link rel="icon" href="assets/icons/t.png" type="image/x-icon">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0B132B;
+    --bg-2:#0E1733;
+    --slate:#3A506B;
+    --teal:#5BC0BE;
+    --teal-glow: 91,192,190;
+    --ink:#FFFFFF;
+    --muted: rgba(255,255,255,0.62);
+    --hair: rgba(255,255,255,0.10);
+    --panel: rgba(255,255,255,0.045);
+    --panel-strong: rgba(255,255,255,0.08);
+    --grid: rgba(91,192,190,0.10);
+    --parallax: 1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background: radial-gradient(1200px 800px at 70% -10%, rgba(91,192,190,0.10), transparent 60%),
+                radial-gradient(900px 600px at 0% 30%, rgba(58,80,107,0.35), transparent 60%),
+                var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk', system-ui, sans-serif;
+    font-feature-settings:"ss01","ss02";
+    overflow-x:hidden;
+    min-height:100vh;
+    cursor:none;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 80px 80px, 80px 80px;
+    mask-image: radial-gradient(1200px 800px at 50% 30%, black, transparent 80%);
+    -webkit-mask-image: radial-gradient(1200px 800px at 50% 30%, black, transparent 80%);
+    pointer-events:none;
+    z-index:0;
+    opacity:.7;
+  }
+  .mono{font-family:'JetBrains Mono', ui-monospace, monospace; letter-spacing:.02em}
+  .h-display{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.02em}
+  ::selection{background:rgba(91,192,190,.35); color:white}
+  a{color:inherit}
+  button{font-family:inherit}
+
+  .cursor-dot, .cursor-ring{
+    position:fixed; left:0; top:0; pointer-events:none; z-index:9999;
+    transform: translate3d(-100px,-100px,0);
+    will-change: transform;
+  }
+  .cursor-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--teal);
+    box-shadow: 0 0 12px rgba(var(--teal-glow), .9);
+  }
+  .cursor-ring{
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid rgba(var(--teal-glow), .55);
+    backdrop-filter: blur(2px);
+    transition: width .2s ease, height .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .cursor-ring.hover{
+    width:54px; height:54px;
+    border-color: rgba(var(--teal-glow), .9);
+    background: rgba(91,192,190,0.07);
+  }
+  @media (hover: none){
+    body{cursor:auto}
+    .cursor-dot,.cursor-ring{display:none}
+  }
+
+  .container{max-width:1200px; margin:0 auto; padding:0 32px; position:relative; z-index:1}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    text-transform:uppercase; letter-spacing:.18em;
+    font-size:11px; color:var(--teal);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{
+    content:""; width:6px; height:6px; background:var(--teal); border-radius:50%;
+    box-shadow: 0 0 10px rgba(var(--teal-glow),.8);
+  }
+  .section-title{
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight:600; letter-spacing:-0.02em; margin: 12px 0 24px;
+    line-height:1.05;
+  }
+  .section{padding: 120px 0; position:relative}
+
+  .glass{
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border:1px solid var(--hair);
+    border-radius:18px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      0 30px 60px -30px rgba(0,0,0,.6);
+  }
+  .glass.lit{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.10),
+      0 30px 60px -30px rgba(0,0,0,.6),
+      0 0 0 1px rgba(var(--teal-glow), .15),
+      0 0 40px -10px rgba(var(--teal-glow), .35);
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 10px; border-radius:999px;
+    border:1px solid var(--hair);
+    background: rgba(255,255,255,.04);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; color:var(--muted);
+  }
+
+  .reveal{opacity:0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1; transform:none}
+
+  .headline{
+    font-size: clamp(56px, 11vw, 168px);
+    line-height: .92;
+    font-weight:600;
+    letter-spacing:-0.045em;
+  }
+
+  .topnav{
+    position:fixed; top:18px; left:50%; transform:translateX(-50%);
+    z-index:50; display:flex; gap:6px;
+    padding:6px; border-radius:999px;
+    background: rgba(11,19,43,.55);
+    border:1px solid var(--hair);
+    backdrop-filter: blur(8px);
+  }
+  .topnav button{
+    background:transparent; border:0; color:var(--muted);
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase;
+    padding:8px 12px; border-radius:999px; cursor:none;
+    transition: color .2s, background .2s;
+  }
+  .topnav button:hover{color:white; background:rgba(255,255,255,.06)}
+  .topnav button.active{color:var(--bg); background:var(--teal)}
+
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--teal-glow),.6)}100%{box-shadow:0 0 0 14px rgba(var(--teal-glow),0)}}
+  .pulse{animation: pulse 1.6s infinite}
+
+  body[data-panels="off"] .hero-panels{display:none}
+  body[data-motion="low"] *{animation-duration: .001s !important; transition-duration: .15s !important}
+
+  @keyframes floaty { 0% { translate: 0 0; } 100% { translate: 0 -8px; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes cube-spin { from { transform: rotateX(-22deg) rotateY(0deg); } to { transform: rotateX(-22deg) rotateY(360deg); } }
+  @keyframes fade { from{opacity:0} to{opacity:1} }
+  @keyframes pop { from{opacity:0; transform: scale(.96) translateY(8px)} to{opacity:1; transform:none} }
+  @keyframes ping { from{ transform:scale(.4); opacity:1 } to{ transform:scale(2); opacity:0 } }
+  @keyframes lock { from{ transform:scale(1.4); opacity:0 } to{ transform:scale(1); opacity:1 } }
+
+  @media (max-width: 900px) {
+    .topnav { gap: 2px; padding: 4px; }
+    .topnav button { padding: 6px 8px; font-size: 10px; }
+    .container { padding: 0 16px; }
+    .section { padding: 80px 0; }
+    .headline { font-size: clamp(36px, 10vw, 80px); }
+  }
+</style>
 </head>
-<body>
-  <div class="container">
-    <header class="navigator">
-      <nav>
-        <div class="line-center">
-          <img src="assets/icons/home.png" alt="home image" width="42px" height="42px">
-          <h1 class="title">Home</h1>
+<body data-motion="normal" data-panels="on">
+  <div id="cursor-ring" class="cursor-ring"></div>
+  <div id="cursor-dot" class="cursor-dot"></div>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js" crossorigin="anonymous"></script>
+
+  <script type="text/babel">
+// ============== DATA ==============
+const PORTFOLIO = {
+  name: "Tom Cheng",
+  fullName: "Wen-Hsiang \"Tom\" Cheng",
+  tagline: "Engineer working at the seam of mixed reality, AI, and the real world.",
+  location: "Taipei → Toronto, Fall 2026",
+  email: "bosszheng220@gmail.com",
+  phone: "+886-979063626",
+  links: [
+    { label: "LinkedIn", href: "https://linkedin.com/in/chengwenhsiang", handle: "/in/chengwenhsiang" },
+    { label: "Email", href: "mailto:bosszheng220@gmail.com", handle: "bosszheng220@gmail.com" },
+  ],
+  about: [
+    "I build systems that put computers inside the operating room, on the loose ends of meetings, and in places where pixels meet bone, instruments, and people.",
+    "Currently leading software at AccuOrtho — shipping HoloLens 2 surgical navigation for hip and knee procedures. Previously: AI engineer intern at Trend Micro, NLP/CV research at Academia Sinica, backend at IGS.",
+    "MSc CS at NTU (1st / 214). Heading to University of Toronto for a graduate exchange in Fall 2026."
+  ],
+  languages: [
+    { name: "Mandarin", level: "Native", pct: 100 },
+    { name: "English",  level: "Fluent — TOEFL 108", pct: 92 },
+    { name: "Spanish",  level: "Conversational", pct: 55 },
+    { name: "Taiwanese",level: "Basic", pct: 30 },
+  ],
+  projects: [
+    {
+      id: "accuhip",
+      title: "AccuHip & AccuKnee",
+      org: "AccuOrtho",
+      year: "2022 — Present",
+      role: "Lead Software Engineer",
+      kind: "Mixed Reality",
+      tagline: "Real-time intra-operative surgical guidance on HoloLens 2.",
+      bullets: [
+        "Architected modules across operative workflow, UI, IR sensor tracking, and 3D visualization.",
+        "Spearheading the full MR navigation stack — HoloLens 2, MRTK, Unity, Python.",
+        "Authored ISO/QMS software documentation; built the company website."
+      ],
+      tags: ["HoloLens 2", "Unity", "MRTK", "Python", "ISO/QMS"],
+      accent: "#5BC0BE",
+    },
+    {
+      id: "trendmicro",
+      title: "Meeting Intelligence + VRL Agent",
+      org: "Trend Micro",
+      year: "Jul — Sep 2025",
+      role: "AI Engineer Intern",
+      kind: "Applied AI",
+      tagline: "Two LangGraph agents shipped to 300+ employees.",
+      bullets: [
+        "Internal meeting summarizer — in-meeting, post-meeting, and multi-meeting summaries.",
+        "Third-party parser agent that auto-generates VRL scripts to remap raw logs for the AI SIEM team.",
+      ],
+      tags: ["LangChain", "LangGraph", "Postgres", "Chrome Ext."],
+      accent: "#9DE0DE",
+    },
+    {
+      id: "maaig",
+      title: "MAAIG — Multimodal Sport Instruction",
+      org: "Academia Sinica · IIS",
+      year: "Jul — Dec 2023",
+      role: "Research Assistant",
+      kind: "Research / NLP+CV",
+      tagline: "Generating coach-style instructions for ice skating & boxing.",
+      bullets: [
+        "Architected language models and generation workflows for multimodal instruction.",
+        "Published at the Workshop on Intelligent Sports Technologies, ACM Multimedia Asia 2023."
+      ],
+      tags: ["Transformer", "T5", "PyTorch", "Multimodal"],
+      accent: "#7CD6D4",
+    },
+    {
+      id: "igs",
+      title: "Competitor Analysis CMS",
+      org: "International Games System",
+      year: "Apr 2022 — Mar 2023",
+      role: "Backend Engineer Intern",
+      kind: "Backend",
+      tagline: "Used daily by 1,000+ employees. 75% query-time reduction.",
+      bullets: [
+        "Built a caching-optimized DB layer; cut query time by 75%.",
+        "Crafted CMS backend in Node.js + MongoDB + Redis on GCP."
+      ],
+      tags: ["Node.js", "MongoDB", "Redis", "GCP", "Docker"],
+      accent: "#3A506B",
+    },
+  ],
+  experience: [
+    { org: "AccuOrtho", role: "Lead Software Engineer", when: "Sept 2022 — Present", where: "Taipei", dot:"#5BC0BE" },
+    { org: "Trend Micro", role: "AI Engineer Intern", when: "Jul — Sep 2025", where: "Taipei", dot:"#9DE0DE" },
+    { org: "Academia Sinica · IIS", role: "Research Assistant", when: "Jul — Dec 2023", where: "Taipei", dot:"#7CD6D4" },
+    { org: "International Games System", role: "Backend Engineer Intern", when: "Apr 2022 — Mar 2023", where: "Taipei", dot:"#3A506B" },
+  ],
+  education: [
+    {
+      school: "National Taiwan University",
+      degree: "MSc Computer Science & Information Engineering",
+      when: "Sept 2024 — Dec 2026 (Expected)",
+      meta: ["GPA 4.3 / 4.3", "Rank 1 / 214", "Advisor: Prof. Li-Chen Fu", "Intelligent Robot Lab"],
+      highlight: "Research focus: Computer Vision in Medicine — published in Journal of Imaging Informatics in Medicine."
+    },
+    {
+      school: "University of Toronto — SGS, ECE",
+      degree: "Graduate Exchange Program",
+      when: "Fall 2026",
+      meta: ["Visiting student", "ECE"],
+      highlight: "Graduate exchange — moving the work north for a term."
+    },
+    {
+      school: "National Taiwan University of Science & Technology",
+      degree: "BSc Computer Science & Information Engineering",
+      when: "Sept 2019 — Jun 2023",
+      meta: ["GPA 4.24 / 4.3", "CS major 4.29 / 4.3", "Rank 1 / 107 — Valedictorian", "Phi Tau Phi", "Academic Excellence × 7"],
+      highlight: "Chief Teaching Officer at Data Analysis Club; Graduate Representative."
+    },
+    {
+      school: "National University of Singapore",
+      degree: "Non-Graduating Exchange — School of Computing",
+      when: "Jan — May 2023",
+      meta: ["GPA 4.67 / 5", "NUS Game Dev Group", "NUS Dodgeball"],
+      highlight: "A semester of computing in Singapore, plus a lot of dodgeball."
+    },
+  ],
+  awards: [
+    { title: "From IP to IPO Program", rank: "Top 3", when: "Nov 2025" },
+    { title: "National Innovation Award", rank: "Winner", when: "Dec 2024" },
+    { title: "Robotics Competition", rank: "1st / 16", when: "Dec 2024" },
+    { title: "E.SUN AI Open Competition", rank: "2nd / 218", when: "Nov 2024" },
+    { title: "Phi Tau Phi Scholastic Honor", rank: "Honor Society", when: "2023" },
+    { title: "Academic Excellence Award", rank: "× 7", when: "2019 — 2023" },
+  ],
+  publications: [
+    {
+      title: "MAAIG: A multimodal approach to AI-generated instructions for sport",
+      venue: "Workshop on Intelligent Sports Technologies @ ACM Multimedia Asia",
+      year: "2023",
+      role: "Co-author"
+    },
+    {
+      title: "Computer Vision in Medicine (clinical imaging study)",
+      venue: "Journal of Imaging Informatics in Medicine",
+      year: "—",
+      role: "Co-author"
+    }
+  ],
+  stack: {
+    "Languages": ["Python","C","C++","C#","JavaScript","TypeScript","Solidity"],
+    "MR / 3D": ["HoloLens 2","Unity","MRTK","Figma"],
+    "AI": ["PyTorch","Transformers","T5","LangChain","LangGraph"],
+    "Backend": ["Node.js","MongoDB","Redis","Postgres","Jest"],
+    "DevOps": ["Git","Docker","Nginx","Google Cloud","Linux","Claude Code"],
+  }
+};
+
+// ============== PRIMITIVES ==============
+const { useState, useEffect, useRef, useCallback } = React;
+
+function useReveal(){
+  const ref = useRef(null);
+  useEffect(()=>{
+    const el = ref.current; if(!el) return;
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ el.classList.add('in'); io.unobserve(el); }
+      });
+    }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
+    io.observe(el);
+    return ()=> io.disconnect();
+  },[]);
+  return ref;
+}
+
+function Reveal({as:Tag='div', delay=0, children, className='', style={}}){
+  const ref = useReveal();
+  return <Tag ref={ref} className={`reveal ${className}`} style={{transitionDelay:`${delay}ms`, ...style}}>{children}</Tag>;
+}
+
+function Eyebrow({children}){ return <span className="eyebrow">{children}</span>; }
+
+function SectionHeader({eyebrow, title, sub}){
+  return (
+    <div style={{marginBottom: 56, maxWidth: 720}}>
+      <Reveal><Eyebrow>{eyebrow}</Eyebrow></Reveal>
+      <Reveal delay={80}><h2 className="section-title">{title}</h2></Reveal>
+      {sub && <Reveal delay={140}><p style={{color:'var(--muted)', fontSize:18, lineHeight:1.55, margin:0, maxWidth:640}}>{sub}</p></Reveal>}
+    </div>
+  );
+}
+
+function useDampedMouse(damp=0.08){
+  const target = useRef({x:0,y:0});
+  const current = useRef({x:0,y:0});
+  useEffect(()=>{
+    const onMove = (e)=>{
+      const w = window.innerWidth, h = window.innerHeight;
+      target.current = { x:(e.clientX/w)*2-1, y:(e.clientY/h)*2-1 };
+    };
+    window.addEventListener('mousemove', onMove);
+    let raf;
+    const tick=()=>{
+      current.current.x += (target.current.x - current.current.x)*damp;
+      current.current.y += (target.current.y - current.current.y)*damp;
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return ()=>{ window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); };
+  },[damp]);
+  return current;
+}
+
+function Magnetic({children, strength=0.25, style={}}){
+  const ref = useRef(null);
+  const [t, setT] = useState({x:0,y:0});
+  const onMove = (e)=>{
+    const r = ref.current.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+    setT({x:(e.clientX-cx)*strength, y:(e.clientY-cy)*strength});
+  };
+  return (
+    <div ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={()=>setT({x:0,y:0})}
+      onMouseEnter={()=>document.body.dataset.cursor='hover'}
+      style={{transform:`translate3d(${t.x}px, ${t.y}px, 0)`, transition:'transform .25s cubic-bezier(.2,.8,.2,1)', ...style}}>
+      {children}
+    </div>
+  );
+}
+
+// ============== HERO ==============
+function FloatingPanel({depth=20, x=0, y=0, w=220, h=140, delay=0, children, accent=false, rot=0}){
+  const ref = useRef(null);
+  const dampedMouse = useDampedMouse(0.07);
+  useEffect(()=>{
+    let raf;
+    const tick = ()=>{
+      const m = dampedMouse.current;
+      const k = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--parallax')) || 1;
+      if(ref.current){
+        const tx = -m.x * depth * k;
+        const ty = -m.y * depth * k;
+        const rx = m.y * 8 * k;
+        const ry = -m.x * 12 * k;
+        ref.current.style.transform = `translate3d(${x + tx}px, ${y + ty}px, 0) rotateX(${rx}deg) rotateY(${ry + rot}deg)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return ()=> cancelAnimationFrame(raf);
+  },[depth, x, y, rot]);
+  return (
+    <div ref={ref} className={`glass ${accent?'lit':''}`} style={{
+      position:'absolute', width: w, height: h, padding: 14,
+      transformStyle:'preserve-3d',
+      transition: `opacity .8s ease ${delay}ms, filter .8s ease ${delay}ms`,
+      animation: `floaty ${6 + (depth%5)}s ease-in-out ${delay}ms infinite alternate`,
+    }}>{children}</div>
+  );
+}
+
+function Reticle({size=120}){
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" style={{display:'block'}}>
+      <defs>
+        <radialGradient id="rgg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(91,192,190,.5)"/>
+          <stop offset="60%" stopColor="rgba(91,192,190,.0)"/>
+        </radialGradient>
+      </defs>
+      <circle cx="60" cy="60" r="56" fill="url(#rgg)"/>
+      <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(91,192,190,.55)" strokeDasharray="2 4"/>
+      <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(255,255,255,.45)"/>
+      <circle cx="60" cy="60" r="3" fill="#5BC0BE"/>
+      <line x1="60" y1="6" x2="60" y2="22" stroke="rgba(91,192,190,.7)"/>
+      <line x1="60" y1="98" x2="60" y2="114" stroke="rgba(91,192,190,.7)"/>
+      <line x1="6" y1="60" x2="22" y2="60" stroke="rgba(91,192,190,.7)"/>
+      <line x1="98" y1="60" x2="114" y2="60" stroke="rgba(91,192,190,.7)"/>
+      <g style={{animation:'spin 9s linear infinite', transformOrigin:'60px 60px'}}>
+        <path d="M60 18 A42 42 0 0 1 102 60" fill="none" stroke="rgba(91,192,190,.9)" strokeWidth="1.5"/>
+      </g>
+    </svg>
+  );
+}
+
+function MiniGraph(){
+  const pts = [];
+  const N=24;
+  for(let i=0;i<N;i++){
+    const v = 30 + Math.sin(i*0.6)*8 + Math.cos(i*1.1)*5 + i*0.6;
+    pts.push([i*(190/(N-1))+5, 70-v*0.7]);
+  }
+  const d = pts.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  return (
+    <svg width="200" height="80" viewBox="0 0 200 80">
+      <path d={d} fill="none" stroke="#5BC0BE" strokeWidth="1.5"/>
+      <path d={d+' L195 75 L5 75 Z'} fill="rgba(91,192,190,.12)"/>
+      {pts.map((p,i)=> i%4===0 && <circle key={i} cx={p[0]} cy={p[1]} r="1.6" fill="#5BC0BE"/>)}
+    </svg>
+  );
+}
+
+function ScanCube(){
+  return (
+    <div style={{width:140, height:140, position:'relative', transformStyle:'preserve-3d', animation:'cube-spin 14s linear infinite'}}>
+      {[
+        {t:'rotateY(0deg) translateZ(70px)'},
+        {t:'rotateY(90deg) translateZ(70px)'},
+        {t:'rotateY(180deg) translateZ(70px)'},
+        {t:'rotateY(-90deg) translateZ(70px)'},
+        {t:'rotateX(90deg) translateZ(70px)'},
+        {t:'rotateX(-90deg) translateZ(70px)'},
+      ].map((f,i)=>(
+        <div key={i} style={{
+          position:'absolute', inset:0, width:140, height:140,
+          border:'1px solid rgba(91,192,190,.55)',
+          background:'linear-gradient(135deg, rgba(91,192,190,.06), rgba(91,192,190,0))',
+          transform:f.t,
+          backgroundImage:'linear-gradient(rgba(91,192,190,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(91,192,190,.18) 1px, transparent 1px)',
+          backgroundSize:'14px 14px'
+        }}/>
+      ))}
+    </div>
+  );
+}
+
+function Hero(){
+  const damped = useDampedMouse(0.08);
+  const heroRef = useRef(null);
+  useEffect(()=>{
+    let raf;
+    const tick=()=>{
+      const m = damped.current;
+      if(heroRef.current){
+        heroRef.current.style.setProperty('--mx', m.x.toFixed(3));
+        heroRef.current.style.setProperty('--my', m.y.toFixed(3));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return ()=>cancelAnimationFrame(raf);
+  },[]);
+
+  const [time, setTime] = useState(()=> new Date());
+  useEffect(()=>{
+    const id = setInterval(()=>setTime(new Date()), 1000);
+    return ()=>clearInterval(id);
+  },[]);
+  const tStr = time.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'Asia/Taipei'});
+
+  return (
+    <section id="hero" className="section" style={{padding:'140px 0 80px', minHeight:'100vh', position:'relative', display:'flex', alignItems:'center'}}>
+      <div ref={heroRef} className="container" style={{position:'relative', perspective:'1400px', transformStyle:'preserve-3d'}}>
+        <div className="hero-panels" style={{position:'absolute', inset:0, pointerEvents:'none'}} aria-hidden>
+          <FloatingPanel x={-40} y={40} w={250} h={170} depth={28} delay={0} accent>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', letterSpacing:'.18em'}}>SESSION · ACCUHIP</div>
+            <div style={{display:'flex', justifyContent:'space-between', marginTop:8, alignItems:'center'}}>
+              <div style={{fontSize:24, fontWeight:600}}>OR-3</div>
+              <div className="mono" style={{fontSize:10, color:'#5BC0BE'}}>● TRACKING</div>
+            </div>
+            <div style={{marginTop:8}}><MiniGraph/></div>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.45)', marginTop:6, display:'flex', justifyContent:'space-between'}}>
+              <span>IR·OK</span><span>LATENCY 11ms</span><span>FPS 60</span>
+            </div>
+          </FloatingPanel>
+
+          <FloatingPanel x={760} y={-20} w={210} h={210} depth={42} delay={150} rot={-6}>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', letterSpacing:'.18em'}}>PATIENT MESH</div>
+            <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:170}}><ScanCube/></div>
+          </FloatingPanel>
+
+          <FloatingPanel x={830} y={300} w={230} h={140} depth={20} delay={300}>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', letterSpacing:'.18em'}}>NOW · TAIPEI</div>
+            <div style={{display:'flex', alignItems:'baseline', gap:8, marginTop:8}}>
+              <span className="mono" style={{fontSize:34, color:'#fff'}}>{tStr}</span>
+            </div>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', marginTop:6}}>25.0330° N · 121.5654° E</div>
+            <div className="mono" style={{fontSize:10, color:'#5BC0BE', marginTop:8}}>→ UofT · Fall 2026</div>
+          </FloatingPanel>
+
+          <FloatingPanel x={-90} y={420} w={220} h={130} depth={14} delay={450} rot={4}>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', letterSpacing:'.18em'}}>STACK · LIVE</div>
+            <div style={{display:'flex', flexWrap:'wrap', gap:6, marginTop:10}}>
+              {['HoloLens 2','LangGraph','PyTorch','Unity','MRTK','Postgres'].map(t=>(
+                <span key={t} style={{padding:'4px 8px', borderRadius:6, border:'1px solid rgba(255,255,255,.12)', fontFamily:'JetBrains Mono', fontSize:10, color:'rgba(255,255,255,.78)', background:'rgba(255,255,255,.04)'}}>{t}</span>
+              ))}
+            </div>
+          </FloatingPanel>
+
+          <FloatingPanel x={520} y={460} w={180} h={120} depth={36} delay={600} rot={-3}>
+            <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)', letterSpacing:'.18em'}}>TARGETING</div>
+            <div style={{display:'flex', justifyContent:'center', marginTop:0}}><Reticle size={92}/></div>
+          </FloatingPanel>
+
+          <FloatingPanel x={300} y={-90} w={270} h={64} depth={50} delay={750}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', height:'100%'}}>
+              <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.55)'}}>RANK</div>
+              <div className="mono" style={{fontSize:22, color:'#fff'}}>1<span style={{color:'rgba(255,255,255,.4)'}}>/214</span></div>
+              <div className="mono" style={{fontSize:10, color:'#5BC0BE'}}>NTU MSc</div>
+            </div>
+          </FloatingPanel>
         </div>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="resume.html">Resume</a>
-        <a href="projects.html">Projects</a>
-      </nav>
-    </header>
-    <article>
-      <header>
-        <h2>Welcome to my personal website!</h2>
-        <p>I build this website from scratch! and I will continue adding new stuff into it every single day!</p>
-        <p>Stay tune for the final result :D</p>
-        <p>Last update date: 8/6/2023</p>
-      </header>
-      <div class="center-box">
-        <img src="assets/img/smile.png" alt="A smiley face" id="face">
-        <p id="counter">Happiness: 60</p>
+
+        <div style={{position:'relative', zIndex:2, textAlign:'left'}}>
+          <Reveal><Eyebrow>Wen-Hsiang "Tom" Cheng · Engineer · Researcher</Eyebrow></Reveal>
+          <Reveal delay={120}>
+            <h1 className="headline h-display" style={{margin:'18px 0 0'}}>
+              Building <span style={{background:'linear-gradient(180deg,#5BC0BE,#9DE0DE)', WebkitBackgroundClip:'text', backgroundClip:'text', color:'transparent'}}>spatial</span><br/>
+              software for <em style={{fontStyle:'italic', fontWeight:400, opacity:.85}}>real</em> places.
+            </h1>
+          </Reveal>
+          <Reveal delay={260}>
+            <p style={{maxWidth: 560, marginTop: 28, fontSize: 18, lineHeight:1.55, color:'rgba(255,255,255,.78)'}}>
+              I lead software at AccuOrtho — shipping HoloLens 2 surgical navigation. 1<sup>st</sup>/214 at NTU. Heading to <span style={{color:'#5BC0BE'}}>UofT</span> in Fall 2026. Currently obsessed with the seam between AI, MR, and the operating room.
+            </p>
+          </Reveal>
+          <Reveal delay={380}>
+            <div style={{display:'flex', gap:10, marginTop: 28, flexWrap:'wrap'}}>
+              <Magnetic>
+                <a href="#projects" className="glass" style={{display:'inline-flex', alignItems:'center', gap:8, padding:'12px 18px', borderRadius:999, color:'white', textDecoration:'none', fontFamily:'JetBrains Mono', fontSize:12, letterSpacing:'.12em', textTransform:'uppercase'}}>
+                  <span style={{width:6, height:6, borderRadius:'50%', background:'#5BC0BE', boxShadow:'0 0 8px #5BC0BE'}}/>see the work
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.18}>
+                <a href="#playground" style={{display:'inline-flex', alignItems:'center', gap:8, padding:'12px 18px', borderRadius:999, color:'rgba(255,255,255,.7)', textDecoration:'none', fontFamily:'JetBrains Mono', fontSize:12, letterSpacing:'.12em', textTransform:'uppercase', border:'1px solid var(--hair)'}}>↗ playground</a>
+              </Magnetic>
+            </div>
+          </Reveal>
+          <Reveal delay={520}>
+            <div style={{marginTop:48, display:'flex', gap:18, alignItems:'center', fontFamily:'JetBrains Mono', fontSize:11, color:'rgba(255,255,255,.5)', letterSpacing:'.12em', textTransform:'uppercase'}}>
+              <span style={{display:'inline-flex', gap:8, alignItems:'center'}}>
+                <span style={{width:8, height:8, borderRadius:'50%', background:'#5BC0BE'}} className="pulse"/>Available · Fall 2026
+              </span>
+              <span style={{opacity:.4}}>—</span>
+              <span>scroll</span>
+              <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+                <rect x=".5" y=".5" width="13" height="21" rx="6.5" stroke="rgba(255,255,255,.3)"/>
+                <circle cx="7" cy="7" r="2" fill="#5BC0BE"><animate attributeName="cy" values="7;15;7" dur="1.6s" repeatCount="indefinite"/></circle>
+              </svg>
+            </div>
+          </Reveal>
+        </div>
       </div>
-    </article>
-    <footer>
-      <p>Copyright&copy;Wen Hsiang Cheng</p>
+    </section>
+  );
+}
+
+// ============== ABOUT ==============
+function LanguageBar({l, delay}){
+  const ref = useRef(null);
+  const [w, setW] = useState(0);
+  useEffect(()=>{
+    const io = new IntersectionObserver(([e])=>{
+      if(e.isIntersecting){ setTimeout(()=> setW(l.pct), delay); io.disconnect(); }
+    },{threshold:.4});
+    if(ref.current) io.observe(ref.current);
+    return ()=> io.disconnect();
+  },[delay,l.pct]);
+  return (
+    <div ref={ref}>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6}}>
+        <span style={{fontSize:16, fontWeight:500}}>{l.name}</span>
+        <span className="mono" style={{fontSize:11, color:'rgba(255,255,255,.55)'}}>{l.level}</span>
+      </div>
+      <div style={{height:4, background:'rgba(255,255,255,.08)', borderRadius:4, overflow:'hidden'}}>
+        <div style={{height:'100%', width:`${w}%`, background:'linear-gradient(90deg,#5BC0BE,#9DE0DE)', transition:'width 1.4s cubic-bezier(.2,.8,.2,1)', boxShadow:'0 0 12px rgba(91,192,190,.5)'}}/>
+      </div>
+    </div>
+  );
+}
+
+function About(){
+  const P = PORTFOLIO;
+  return (
+    <section id="about" className="section">
+      <div className="container" style={{display:'grid', gridTemplateColumns:'1.2fr 1fr', gap:80, alignItems:'start'}}>
+        <div>
+          <SectionHeader eyebrow="01 — About" title="Engineer at the seam of MR, AI, and the real world." />
+          {P.about.map((p,i)=>(
+            <Reveal key={i} delay={80*i}>
+              <p style={{fontSize:18, lineHeight:1.7, color:'rgba(255,255,255,.82)', margin:'0 0 18px', maxWidth:580}}>{p}</p>
+            </Reveal>
+          ))}
+          <Reveal delay={400}>
+            <div style={{display:'flex', flexWrap:'wrap', gap:8, marginTop:24}}>
+              {Object.entries(P.stack).map(([k,v])=>(
+                <div key={k} className="glass" style={{padding:'12px 14px', borderRadius:12, minWidth:200}}>
+                  <div className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase', marginBottom:8}}>{k}</div>
+                  <div style={{display:'flex', flexWrap:'wrap', gap:6}}>
+                    {v.map(t=>(<span key={t} className="mono" style={{fontSize:11, color:'rgba(255,255,255,.78)', padding:'3px 7px', borderRadius:6, border:'1px solid rgba(255,255,255,.1)', background:'rgba(255,255,255,.03)'}}>{t}</span>))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+        <div>
+          <Reveal>
+            <div className="glass lit" style={{padding:24, borderRadius:18}}>
+              <div className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase'}}>Languages</div>
+              <div style={{marginTop:18, display:'flex', flexDirection:'column', gap:18}}>
+                {P.languages.map((l,i)=>(<LanguageBar key={l.name} l={l} delay={i*120}/>))}
+              </div>
+              <div style={{marginTop:24, paddingTop:20, borderTop:'1px solid var(--hair)'}}>
+                <div className="mono" style={{fontSize:10, color:'rgba(255,255,255,.45)', letterSpacing:'.18em', textTransform:'uppercase'}}>FACTS</div>
+                <ul style={{listStyle:'none', padding:0, margin:'14px 0 0', fontSize:14, color:'rgba(255,255,255,.78)'}}>
+                  <li style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px dashed var(--hair)'}}><span>Currently</span><span className="mono" style={{color:'white'}}>Taipei, TW</span></li>
+                  <li style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px dashed var(--hair)'}}><span>Next</span><span className="mono" style={{color:'#5BC0BE'}}>Toronto · Fall '26</span></li>
+                  <li style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px dashed var(--hair)'}}><span>NTU MSc rank</span><span className="mono" style={{color:'white'}}>1 / 214</span></li>
+                  <li style={{display:'flex', justifyContent:'space-between', padding:'8px 0'}}><span>BSc rank</span><span className="mono" style={{color:'white'}}>Valedictorian</span></li>
+                </ul>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============== PROJECTS ==============
+function ProjectVisual({p}){
+  if(p.id==='accuhip'){
+    return (<div style={{marginTop:14, height:90, borderRadius:10, background:'rgba(0,0,0,.2)', border:'1px solid var(--hair)', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden'}}><Reticle size={70}/><div className="mono" style={{position:'absolute', left:10, top:10, fontSize:9, color:'rgba(91,192,190,.7)'}}>HOLOLENS·OR-3</div></div>);
+  }
+  if(p.id==='trendmicro'){
+    return (<div style={{marginTop:14, height:90, borderRadius:10, background:'rgba(0,0,0,.2)', border:'1px solid var(--hair)', padding:10, fontFamily:'JetBrains Mono', fontSize:10, color:'rgba(255,255,255,.75)'}}><div style={{color:'#9DE0DE'}}>$ agent.run("daily-standup.mp4")</div><div style={{color:'rgba(255,255,255,.5)'}}>→ extracting decisions … action items …</div><div style={{color:'#5BC0BE', marginTop:4}}>✓ summary delivered to 12 attendees</div></div>);
+  }
+  if(p.id==='maaig'){
+    return (<div style={{marginTop:14, height:90, borderRadius:10, background:'rgba(0,0,0,.2)', border:'1px solid var(--hair)', display:'flex', alignItems:'center', gap:14, padding:'10px 14px'}}><div className="mono" style={{fontSize:9, color:'#9DE0DE', letterSpacing:'.18em'}}>VIDEO</div><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" stroke="rgba(91,192,190,.5)" fill="none"/><path d="M16 13 L28 20 L16 27 Z" fill="#5BC0BE"/></svg><div style={{flex:1, fontSize:12, color:'rgba(255,255,255,.78)'}}>"Bend your knees a bit more on the<br/>landing — engage your core."</div></div>);
+  }
+  return (<div style={{marginTop:14, height:90, borderRadius:10, background:'rgba(0,0,0,.2)', border:'1px solid var(--hair)', display:'flex', alignItems:'center', justifyContent:'space-around', padding:10}}><div style={{textAlign:'center'}}><div className="mono" style={{fontSize:9, color:'rgba(255,255,255,.4)'}}>BEFORE</div><div className="mono" style={{fontSize:20, color:'rgba(255,255,255,.8)'}}>1.2s</div></div><svg width="80" height="20"><path d="M0 10 L70 10" stroke="rgba(91,192,190,.6)" strokeDasharray="3 3"/><path d="M62 4 L74 10 L62 16" fill="none" stroke="#5BC0BE"/></svg><div style={{textAlign:'center'}}><div className="mono" style={{fontSize:9, color:'#5BC0BE'}}>AFTER · −75%</div><div className="mono" style={{fontSize:20, color:'#5BC0BE'}}>0.3s</div></div></div>);
+}
+
+function ProjectCard({p, dragging}){
+  return (
+    <div className="glass lit" style={{padding: 22, borderRadius: 18, transformStyle:'preserve-3d', boxShadow: dragging ? '0 40px 80px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(91,192,190,.35)' : undefined}}>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12}}>
+        <div>
+          <div className="mono" style={{fontSize:10, color: p.accent, letterSpacing:'.18em', textTransform:'uppercase'}}>{p.kind}</div>
+          <h3 className="h-display" style={{fontSize:26, margin:'8px 0 2px', lineHeight:1.1}}>{p.title}</h3>
+          <div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.5)'}}>{p.org} · {p.year}</div>
+        </div>
+        <button onClick={(e)=>e.stopPropagation()} style={{background:'rgba(255,255,255,.06)', border:'1px solid var(--hair)', color:'rgba(255,255,255,.7)', borderRadius:999, padding:'6px 10px', fontFamily:'JetBrains Mono', fontSize:10, letterSpacing:'.12em', textTransform:'uppercase', cursor:'inherit'}}>open ↗</button>
+      </div>
+      <p style={{fontSize:14, lineHeight:1.55, color:'rgba(255,255,255,.78)', margin:'14px 0 12px'}}>{p.tagline}</p>
+      <div style={{display:'flex', flexWrap:'wrap', gap:6}}>
+        {p.tags.map(t=>(<span key={t} className="mono" style={{fontSize:10, padding:'3px 7px', borderRadius:6, border:'1px solid rgba(255,255,255,.12)', color:'rgba(255,255,255,.7)', background:'rgba(255,255,255,.03)'}}>{t}</span>))}
+      </div>
+      <ProjectVisual p={p}/>
+    </div>
+  );
+}
+
+function DraggableProjectCard({p, start, onOpen, zCounter, setZCounter, delay}){
+  const [pos, setPos] = useState({x:start.x, y:start.y, r:start.r});
+  const [z, setZ] = useState(1);
+  const [dragging, setDragging] = useState(false);
+  const downRef = useRef(null);
+  const ref = useRef(null);
+
+  const onPointerDown = (e)=>{
+    if(e.button===2) return;
+    const r = ref.current.getBoundingClientRect();
+    downRef.current = {sx: e.clientX, sy: e.clientY, ox: pos.x, oy: pos.y, moved: false};
+    setZCounter(c=>c+1);
+    setZ(zCounter+1);
+    setDragging(true);
+    ref.current.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e)=>{
+    if(!downRef.current) return;
+    const dx = e.clientX - downRef.current.sx;
+    const dy = e.clientY - downRef.current.sy;
+    if(Math.abs(dx)+Math.abs(dy) > 4) downRef.current.moved = true;
+    setPos({x: downRef.current.ox + dx, y: downRef.current.oy + dy, r: start.r + (dx*0.02)});
+  };
+  const onPointerUp = ()=>{
+    const moved = downRef.current?.moved;
+    downRef.current = null;
+    setDragging(false);
+    setPos(p=>({...p, r:start.r}));
+    if(!moved) onOpen();
+  };
+
+  return (
+    <div ref={ref} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={()=>{downRef.current=null; setDragging(false);}} onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''}
+      style={{position:'absolute', left: 0, top: 0, transform: `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.r}deg) scale(${dragging?1.03:1})`, transition: dragging ? 'transform .04s linear' : `transform .35s cubic-bezier(.2,.8,.2,1) ${delay}ms, box-shadow .3s`, width: 420, zIndex: z, cursor: dragging?'grabbing':'grab', touchAction:'none'}}>
+      <ProjectCard p={p} dragging={dragging}/>
+    </div>
+  );
+}
+
+function ProjectModal({project, onClose}){
+  useEffect(()=>{
+    const onKey = (e)=> e.key==='Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow='hidden';
+    return ()=>{ window.removeEventListener('keydown', onKey); document.body.style.overflow=''; };
+  },[onClose]);
+  return (
+    <div onClick={onClose} style={{position:'fixed', inset:0, zIndex:200, background:'rgba(8,12,28,.7)', backdropFilter:'blur(12px)', display:'flex', alignItems:'center', justifyContent:'center', padding:24, animation:'fade .2s ease'}}>
+      <div onClick={(e)=>e.stopPropagation()} className="glass lit" style={{maxWidth: 720, width:'100%', padding: 36, borderRadius: 22, animation:'pop .28s cubic-bezier(.2,.8,.2,1)'}}>
+        <div className="mono" style={{fontSize:10, color: project.accent, letterSpacing:'.18em', textTransform:'uppercase'}}>{project.kind}</div>
+        <h3 className="h-display" style={{fontSize:36, margin:'10px 0 6px', lineHeight:1.05}}>{project.title}</h3>
+        <div className="mono" style={{fontSize:12, color:'rgba(255,255,255,.55)'}}>{project.role} · {project.org} · {project.year}</div>
+        <p style={{fontSize:18, lineHeight:1.55, color:'rgba(255,255,255,.85)', marginTop:18}}>{project.tagline}</p>
+        <ul style={{margin:'18px 0 0', padding:'0 0 0 18px', color:'rgba(255,255,255,.78)', fontSize:15, lineHeight:1.65}}>
+          {project.bullets.map((b,i)=> <li key={i} style={{margin:'6px 0'}}>{b}</li>)}
+        </ul>
+        <div style={{display:'flex', gap:6, flexWrap:'wrap', marginTop:18}}>
+          {project.tags.map(t=> <span key={t} className="pill">{t}</span>)}
+        </div>
+        <div style={{marginTop:24, display:'flex', justifyContent:'flex-end'}}>
+          <button onClick={onClose} style={{background:'rgba(255,255,255,.06)', border:'1px solid var(--hair)', color:'white', borderRadius:999, padding:'10px 16px', fontFamily:'JetBrains Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', cursor:'inherit'}}>close · esc</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Projects(){
+  const P = PORTFOLIO;
+  const [open, setOpen] = useState(null);
+  const [zCounter, setZCounter] = useState(10);
+  const layout = [{x: 0, y: 0, r:-2}, {x: 540, y: 30, r: 1.5}, {x: 60, y: 360, r: 1}, {x: 580, y: 400, r:-1.5}];
+
+  return (
+    <section id="projects" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="02 — Featured projects" title="Things I've shipped, researched, and broken in production." sub="Drag the cards. Click any to open. Each is a real project — links and reading inside." />
+        <div style={{position:'relative', height: 720, width:'100%'}}>
+          {P.projects.map((p,i)=>(<DraggableProjectCard key={p.id} p={p} start={layout[i]} onOpen={()=>setOpen(p)} zCounter={zCounter} setZCounter={setZCounter} delay={i*90}/>))}
+          <div className="mono" style={{position:'absolute', right: 0, bottom: -32, color:'rgba(255,255,255,.4)', fontSize:11}}>↘ drag · click to open</div>
+        </div>
+      </div>
+      {open && <ProjectModal project={open} onClose={()=>setOpen(null)}/>}
+    </section>
+  );
+}
+
+// ============== EXPERIENCE ==============
+function Experience(){
+  const P = PORTFOLIO;
+  return (
+    <section id="experience" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="03 — Experience" title="A short, dense resume." />
+        <div style={{position:'relative', paddingLeft:28}}>
+          <div style={{position:'absolute', left:9, top:0, bottom:0, width:2, background:'linear-gradient(180deg, transparent, rgba(91,192,190,.55) 12%, rgba(91,192,190,.55) 80%, transparent)'}}/>
+          {P.experience.map((x,i)=>(
+            <Reveal key={i} delay={i*80}>
+              <div style={{position:'relative', padding:'14px 0 28px'}}>
+                <span style={{position:'absolute', left:-23, top:18, width:14, height:14, borderRadius:'50%', background: x.dot, boxShadow:`0 0 0 3px var(--bg), 0 0 0 4px ${x.dot}88, 0 0 16px ${x.dot}88`}}/>
+                <div style={{display:'grid', gridTemplateColumns:'180px 1fr 120px', gap:24, alignItems:'baseline'}}>
+                  <div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.55)', letterSpacing:'.08em'}}>{x.when}</div>
+                  <div><div style={{fontSize:20, fontWeight:500, color:'white'}}>{x.role}</div><div className="mono" style={{fontSize:12, color:'#5BC0BE', marginTop:2}}>{x.org}</div></div>
+                  <div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.45)', textAlign:'right'}}>{x.where}</div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============== CREDENTIALS ==============
+function SubHead({num, label}){
+  return (<div style={{display:'flex', alignItems:'baseline', gap:10, marginBottom:6}}><span className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em'}}>{num}</span><span className="mono" style={{fontSize:11, color:'rgba(255,255,255,.7)', letterSpacing:'.18em', textTransform:'uppercase'}}>{label}</span><span style={{flex:1, height:1, background:'var(--hair)'}}/></div>);
+}
+
+function EducationCard({e}){
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="glass" style={{padding:20, borderRadius:16, cursor:'inherit'}} onClick={()=>setOpen(!open)} onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''}>
+      <div style={{display:'flex', justifyContent:'space-between', gap:16, alignItems:'flex-start'}}>
+        <div><div style={{fontSize:18, fontWeight:500}}>{e.school}</div><div className="mono" style={{fontSize:12, color:'#5BC0BE', marginTop:2}}>{e.degree}</div></div>
+        <div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.55)', whiteSpace:'nowrap'}}>{e.when}</div>
+      </div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:6, marginTop:12, maxHeight: open ? 200 : 28, overflow:'hidden', transition:'max-height .4s ease'}}>
+        {e.meta.map(m=>(<span key={m} className="mono" style={{fontSize:11, padding:'3px 8px', borderRadius:6, border:'1px solid rgba(255,255,255,.1)', color:'rgba(255,255,255,.78)', background:'rgba(255,255,255,.03)'}}>{m}</span>))}
+      </div>
+      <div style={{fontSize:13, lineHeight:1.55, color:'rgba(255,255,255,.7)', marginTop: open ? 12 : 0, maxHeight: open ? 100 : 0, overflow:'hidden', transition:'max-height .4s ease, margin-top .4s'}}>{e.highlight}</div>
+    </div>
+  );
+}
+
+function AwardRow({a}){
+  return (
+    <div className="glass" style={{padding:'12px 14px', borderRadius:12, display:'flex', justifyContent:'space-between', alignItems:'center', gap:12}}>
+      <div style={{display:'flex', alignItems:'center', gap:12, minWidth:0}}>
+        <svg width="18" height="22" viewBox="0 0 18 22" style={{flex:'0 0 auto'}}><path d="M3 1 H15 V11 C15 14 12 17 9 18 C6 17 3 14 3 11 Z" fill="none" stroke="#5BC0BE" strokeLinejoin="round"/><circle cx="9" cy="10" r="3" fill="rgba(91,192,190,.4)" stroke="#5BC0BE"/><path d="M6 19 L4 22 M12 19 L14 22" stroke="rgba(91,192,190,.6)"/></svg>
+        <span style={{fontSize:14, color:'white', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{a.title}</span>
+      </div>
+      <div style={{display:'flex', alignItems:'center', gap:10, flex:'0 0 auto'}}><span className="mono" style={{fontSize:11, color:'#5BC0BE'}}>{a.rank}</span><span className="mono" style={{fontSize:10, color:'rgba(255,255,255,.45)'}}>{a.when}</span></div>
+    </div>
+  );
+}
+
+function Credentials(){
+  const P = PORTFOLIO;
+  return (
+    <section id="credentials" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="04 — Credentials" title="Education, awards, publications." />
+        <div style={{display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:32}}>
+          <div style={{display:'flex', flexDirection:'column', gap:14}}>
+            <SubHead num="01" label="Education"/>
+            {P.education.map((e,i)=>(<Reveal key={i} delay={i*80}><EducationCard e={e}/></Reveal>))}
+          </div>
+          <div style={{display:'flex', flexDirection:'column', gap:32}}>
+            <div>
+              <SubHead num="02" label="Awards"/>
+              <div style={{display:'flex', flexDirection:'column', gap:10, marginTop:12}}>
+                {P.awards.map((a,i)=>(<Reveal key={i} delay={i*60}><AwardRow a={a}/></Reveal>))}
+              </div>
+            </div>
+            <div>
+              <SubHead num="03" label="Publications"/>
+              <div style={{display:'flex', flexDirection:'column', gap:12, marginTop:12}}>
+                {P.publications.map((p,i)=>(<Reveal key={i} delay={i*80}><div className="glass" style={{padding:16, borderRadius:14}}><div className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase'}}>{p.role} · {p.year}</div><div style={{fontSize:15, lineHeight:1.4, color:'white', marginTop:6}}>{p.title}</div><div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.55)', marginTop:6}}>{p.venue}</div></div></Reveal>))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============== PLAYGROUND ==============
+function Stat({label, value, accent=false}){
+  return (<div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:2}}><span className="mono" style={{fontSize:9, color:'rgba(255,255,255,.45)', letterSpacing:'.18em'}}>{label}</span><span className="mono" style={{fontSize:18, color: accent ? '#5BC0BE' : 'white', fontWeight:500}}>{value}</span></div>);
+}
+
+function TargetingGame(){
+  const fieldRef = useRef(null);
+  const [running, setRunning] = useState(false);
+  const [score, setScore] = useState(0);
+  const [time, setTime] = useState(30);
+  const [target, setTarget] = useState({x:50, y:50, id:0});
+  const [best, setBest] = useState(()=> Number(localStorage.getItem('tom-best')||0));
+  const [pings, setPings] = useState([]);
+  const [acquiring, setAcquiring] = useState(false);
+  const acquireTimer = useRef(null);
+
+  useEffect(()=>{
+    if(!running) return;
+    if(time<=0){ setRunning(false); if(score>best){ setBest(score); localStorage.setItem('tom-best', String(score)); } return; }
+    const id = setTimeout(()=> setTime(t=>t-1), 1000);
+    return ()=> clearTimeout(id);
+  },[running, time, score, best]);
+
+  useEffect(()=>{
+    if(!running) return;
+    const id = setInterval(()=>{ setTarget(prev=> ({ x: 8 + Math.random()*84, y: 12 + Math.random()*76, id: prev.id+1 })); setAcquiring(false); }, 1800);
+    return ()=> clearInterval(id);
+  },[running]);
+
+  const start = ()=>{ setScore(0); setTime(30); setTarget({x:50,y:50,id:0}); setRunning(true); };
+
+  const onFieldMove = (e)=>{
+    const r = fieldRef.current.getBoundingClientRect();
+    const x = ((e.clientX - r.left)/r.width)*100;
+    const y = ((e.clientY - r.top)/r.height)*100;
+    if(!running) return;
+    const dx = x - target.x, dy = y - target.y;
+    const dist = Math.hypot(dx, dy);
+    if(dist < 5){
+      if(!acquiring){
+        setAcquiring(true);
+        acquireTimer.current = setTimeout(()=>{
+          setScore(s=>s+1);
+          setPings(p=> [...p, {id:Date.now(), x:target.x, y:target.y}].slice(-6));
+          setTarget(prev=> ({ x: 8 + Math.random()*84, y: 12 + Math.random()*76, id: prev.id+1 }));
+          setAcquiring(false);
+        }, 350);
+      }
+    } else { if(acquiring){ clearTimeout(acquireTimer.current); setAcquiring(false); } }
+  };
+
+  const onLeave = ()=>{ if(acquireTimer.current){ clearTimeout(acquireTimer.current); } setAcquiring(false); };
+
+  useEffect(()=>{
+    if(!pings.length) return;
+    const id = setTimeout(()=> setPings(p=>p.slice(1)), 800);
+    return ()=> clearTimeout(id);
+  },[pings]);
+
+  return (
+    <div className="glass lit" style={{padding:20, borderRadius:20}}>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14, flexWrap:'wrap', gap:12}}>
+        <div className="mono" style={{fontSize:11, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase'}}>ACCUTRACK · TRAINING SIM</div>
+        <div style={{display:'flex', gap:18, alignItems:'center'}}>
+          <Stat label="SCORE" value={score}/><Stat label="TIME" value={`${time}s`}/><Stat label="BEST" value={best} accent/>
+          <button onClick={start} disabled={running} style={{background: running ? 'rgba(255,255,255,.04)' : '#5BC0BE', color: running ? 'rgba(255,255,255,.4)' : '#0B132B', border:0, borderRadius:999, padding:'8px 14px', fontFamily:'JetBrains Mono', fontSize:11, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', cursor:'inherit'}}>{running ? 'tracking…' : (time<=0 ? 'restart' : 'start')}</button>
+        </div>
+      </div>
+      <div ref={fieldRef} onMouseMove={onFieldMove} onMouseLeave={onLeave} style={{position:'relative', height:380, borderRadius:14, background:'radial-gradient(600px 240px at 30% 20%, rgba(91,192,190,.07), transparent 70%),linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45))', border:'1px solid rgba(91,192,190,.2)', backgroundImage:'linear-gradient(rgba(91,192,190,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(91,192,190,.08) 1px, transparent 1px),radial-gradient(600px 240px at 30% 20%, rgba(91,192,190,.07), transparent 70%),linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45))', backgroundSize:'40px 40px, 40px 40px, auto, auto', overflow:'hidden', cursor:'crosshair'}}>
+        {[{top:8, left:8, rot:0},{top:8, right:8, rot:90},{bottom:8, right:8, rot:180},{bottom:8, left:8, rot:270}].map((c,i)=>(<svg key={i} width="22" height="22" style={{position:'absolute', ...c, transform:`rotate(${c.rot}deg)`}}><path d="M2 10 V2 H10" fill="none" stroke="rgba(91,192,190,.7)" strokeWidth="1.5"/></svg>))}
+        <div className="mono" style={{position:'absolute', left:14, bottom:10, fontSize:10, color:'rgba(255,255,255,.45)'}}>IR · 60Hz</div>
+        <div className="mono" style={{position:'absolute', right:14, bottom:10, fontSize:10, color:'rgba(91,192,190,.7)'}}>{running ? '● ACQUIRING' : '○ STANDBY'}</div>
+        <div style={{position:'absolute', left: `${target.x}%`, top: `${target.y}%`, transform:'translate(-50%, -50%)', transition: running ? 'left .35s cubic-bezier(.2,.8,.2,1), top .35s cubic-bezier(.2,.8,.2,1)' : 'none', opacity: running ? 1 : .45, pointerEvents:'none'}}>
+          <Reticle size={acquiring ? 80 : 64}/>
+          {acquiring && (<div style={{position:'absolute', inset:-6, border:'2px solid #5BC0BE', borderRadius:'50%', animation:'lock .35s ease-out forwards'}}/>)}
+        </div>
+        {pings.map(p=>(<div key={p.id} style={{position:'absolute', left:`${p.x}%`, top:`${p.y}%`, width:80, height:80, marginLeft:-40, marginTop:-40, borderRadius:'50%', border:'2px solid #5BC0BE', animation:'ping .8s ease-out forwards', pointerEvents:'none'}}/>))}
+        {!running && time>0 && (<div style={{position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:6, pointerEvents:'none'}}><div className="mono" style={{fontSize:11, color:'rgba(91,192,190,.85)', letterSpacing:'.18em'}}>HOVER ON TARGET TO LOCK</div><div className="h-display" style={{fontSize:22, color:'rgba(255,255,255,.72)'}}>Press start.</div></div>)}
+        {!running && time<=0 && (<div style={{position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:6, pointerEvents:'none'}}><div className="mono" style={{fontSize:11, color:'#5BC0BE', letterSpacing:'.18em'}}>SESSION COMPLETE</div><div className="h-display" style={{fontSize:42}}>{score} <span style={{color:'rgba(255,255,255,.45)', fontSize:18}}>locks</span></div><div className="mono" style={{fontSize:11, color:'rgba(255,255,255,.5)'}}>{score>=best ? 'NEW BEST' : `BEST · ${best}`}</div></div>)}
+      </div>
+    </div>
+  );
+}
+
+function EasterEggCard(){
+  const [revealed, setRevealed] = useState(false);
+  return (
+    <div style={{marginTop:24}}>
+      <div className="glass" style={{padding:20, borderRadius:16, display:'flex', justifyContent:'space-between', alignItems:'center', gap:18, flexWrap:'wrap', cursor:'pointer'}} onClick={()=>setRevealed(true)} onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''}>
+        <div><div className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase'}}>{revealed ? 'You found it.' : '· · · · · · ·'}</div><div className="h-display" style={{fontSize:18, marginTop:4}}>{revealed ? "I once cut a query from 1.2s to 0.3s and it felt better than any award." : "Click to reveal a thing I'd say in person."}</div></div>
+        <span className="mono" style={{fontSize:11, color:'rgba(255,255,255,.55)'}}>{revealed ? '✦' : '?'}</span>
+      </div>
+    </div>
+  );
+}
+
+function Playground(){
+  return (
+    <section id="playground" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="05 — Playground" title="A toy in the spirit of the day job." sub="A nod to surgical targeting. Move your cursor onto the field — capture each holographic anchor as it appears. 30 seconds, infinite vibes." />
+        <Reveal><TargetingGame/></Reveal>
+        <Reveal delay={200}><EasterEggCard/></Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ============== APP ==============
+function CustomCursor(){
+  const dotRef = useRef(null), ringRef = useRef(null);
+  useEffect(()=>{
+    let tx=0, ty=0, dx=0, dy=0, rx=0, ry=0;
+    const onMove = (e)=>{ tx = e.clientX; ty = e.clientY; };
+    const onDown = ()=>{ ringRef.current?.classList.add('hover'); };
+    const onUp = ()=>{ ringRef.current?.classList.remove('hover'); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    let raf;
+    const tick=()=>{
+      dx += (tx - dx)*.5; dy += (ty - dy)*.5;
+      rx += (tx - rx)*.18; ry += (ty - ry)*.18;
+      if(dotRef.current) dotRef.current.style.transform = `translate3d(${dx-3}px, ${dy-3}px, 0)`;
+      if(ringRef.current) ringRef.current.style.transform = `translate3d(${rx-17}px, ${ry-17}px, 0)`;
+      const want = document.body.dataset.cursor === 'hover';
+      const has = ringRef.current?.classList.contains('hover');
+      if(want && !has) ringRef.current?.classList.add('hover');
+      else if(!want && has) ringRef.current?.classList.remove('hover');
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return ()=>{ window.removeEventListener('mousemove', onMove); window.removeEventListener('mousedown', onDown); window.removeEventListener('mouseup', onUp); cancelAnimationFrame(raf); };
+  },[]);
+  useEffect(()=>{ dotRef.current = document.getElementById('cursor-dot'); ringRef.current = document.getElementById('cursor-ring'); },[]);
+  return null;
+}
+
+function TopNav(){
+  const items = [{id:'hero', label:'home'},{id:'about', label:'about'},{id:'projects', label:'work'},{id:'experience', label:'cv'},{id:'credentials', label:'awards'},{id:'playground', label:'play'}];
+  const [active, setActive] = useState('hero');
+  useEffect(()=>{
+    const io = new IntersectionObserver((ents)=>{ ents.forEach(e=>{ if(e.isIntersecting) setActive(e.target.id); }); }, {rootMargin:'-40% 0px -55% 0px', threshold:0});
+    items.forEach(it=>{ const el = document.getElementById(it.id); if(el) io.observe(el); });
+    return ()=> io.disconnect();
+  },[]);
+  return (
+    <nav className="topnav">
+      {items.map(it=>(<button key={it.id} className={active===it.id?'active':''} onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''} onClick={()=> document.getElementById(it.id)?.scrollIntoView({behavior:'smooth', block:'start'})}>{it.label}</button>))}
+    </nav>
+  );
+}
+
+function Footer(){
+  const P = PORTFOLIO;
+  return (
+    <footer style={{padding:'80px 0 60px', borderTop:'1px solid var(--hair)', position:'relative', zIndex:1}}>
+      <div className="container" style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', flexWrap:'wrap', gap:24}}>
+        <div>
+          <div className="mono" style={{fontSize:10, color:'#5BC0BE', letterSpacing:'.18em', textTransform:'uppercase'}}>END · OF · TRANSMISSION</div>
+          <h3 className="h-display" style={{fontSize:48, lineHeight:1.05, margin:'12px 0 12px', maxWidth:680}}>Looking for collaborators on MR + AI + the operating room.</h3>
+          <a href={`mailto:${P.email}`} onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''} style={{display:'inline-flex', alignItems:'center', gap:10, color:'#5BC0BE', textDecoration:'none', fontSize:18, borderBottom:'1px solid rgba(91,192,190,.4)', paddingBottom:4}}>{P.email} <span>↗</span></a>
+        </div>
+        <div style={{display:'flex', flexDirection:'column', gap:6, fontFamily:'JetBrains Mono', fontSize:11, color:'rgba(255,255,255,.55)'}}>
+          {P.links.map(l=>(<a key={l.label} href={l.href} target="_blank" rel="noreferrer" onMouseEnter={()=>document.body.dataset.cursor='hover'} onMouseLeave={()=>document.body.dataset.cursor=''} style={{color:'rgba(255,255,255,.7)', textDecoration:'none'}}>{l.label.toUpperCase()} · {l.handle} ↗</a>))}
+          <span style={{marginTop:18, color:'rgba(255,255,255,.35)'}}>{P.phone}</span>
+          <span style={{color:'rgba(255,255,255,.35)'}}>© {new Date().getFullYear()} · {P.fullName}</span>
+        </div>
+      </div>
     </footer>
-  </div>
+  );
+}
+
+function App(){
+  return (
+    <>
+      <CustomCursor/>
+      <TopNav/>
+      <Hero/>
+      <About/>
+      <Projects/>
+      <Experience/>
+      <Credentials/>
+      <Playground/>
+      <Footer/>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
 </body>
-<script src="js/app.js"></script>
 </html>

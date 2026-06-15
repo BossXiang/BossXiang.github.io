@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(curl:*)",
+      "Bash(zlib-flate -uncompress:*)",
+      "Bash(python3:*)",
+      "Bash(gunzip:*)",
+      "Bash(tar:*)",
+      "Bash(cd:*)"
+    ]
+  }
+}
