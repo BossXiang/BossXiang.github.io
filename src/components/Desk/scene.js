@@ -568,7 +568,7 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
     MOONLIGHT = col('#46608f');
   const BG_DAY = col('#1c1912'),
     BG_NIGHT = col('#0b0d12');
-  let lampMix = 1;
+  let lampMix = 0; // lamp starts on (lampState.on === true) → start at the day/warm mix
 
   /* ---- post ---- */
   const rt = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: renderer.capabilities.isWebGL2 ? 4 : 0 });
@@ -847,7 +847,10 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
     // day/night read comes from finalPass's colour grade + vignette + the
     // void background, which can't be swallowed by tonemapping the way raw
     // light intensity was.
-    lampMix = damp(lampMix, lampState.on ? 1 : 0, 6, dt);
+    // lampMix is "how much night/cool mood" — the lamp turning ON should
+    // make the room read brighter/warmer, same as the bulb itself lighting
+    // up, so ON targets 0 (day grade) and OFF targets 1 (night grade).
+    lampMix = damp(lampMix, lampState.on ? 0 : 1, 6, dt);
     key.intensity = 0.85 - lampMix * 0.5;
     key.color.copy(DAYLIGHT).lerp(MOONLIGHT, lampMix);
     hemi.intensity = 0.62 - lampMix * 0.3;
