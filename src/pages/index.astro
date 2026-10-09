@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Desk from '../components/Desk/Desk.astro';
+import { SECTIONS } from '../data/sections.ts';
+
+const deskSections = SECTIONS.map((s) => ({
+  key: s.key,
+  label: s.label,
+  href: `/${s.key}`,
+}));
+---
+
+<BaseLayout
+  title="Tom Cheng"
+  pageTitle="Tom Cheng"
+  eyebrow="Index"
+  lead="Software engineer building mixed reality and AI systems. Every section of the site, as a plain list."
+  showBack={false}
+  mainId="plain-index"
+>
+  <button id="btn-desk" type="button" class="view-desk" hidden>View the desk →</button>
+  <div class="toc">
+    {SECTIONS.map((s) => (
+      <a href={`/${s.key}`}>
+        <b>{s.label}</b>
+        <span>{s.blurb}</span>
+      </a>
+    ))}
+  </div>
+  <Desk slot="overlay" sections={deskSections} />
+</BaseLayout>
+
+<style>
+  .view-desk {
+    align-self: flex-start;
+    background: none;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .view-desk:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+</style>
+
+<script>
+  const btnDesk = document.getElementById('btn-desk');
+  const app = document.getElementById('app');
+  const plainIndex = document.getElementById('plain-index');
+
+  if (document.documentElement.dataset.deskReady) {
+    if (btnDesk) btnDesk.hidden = false;
+  } else {
+    document.addEventListener('desk:ready', () => {
+      if (btnDesk) btnDesk.hidden = false;
+    });
+  }
+
+  btnDesk?.addEventListener('click', () => {
+    if (app) {
+      app.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+    if (plainIndex) plainIndex.hidden = true;
+  });
+</script>

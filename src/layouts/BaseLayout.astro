@@ -1,0 +1,397 @@
+---
+import '../styles/tokens.css';
+
+interface Props {
+  title: string;
+  pageTitle?: string;
+  description?: string;
+  eyebrow?: string;
+  crumb?: string;
+  lead?: string;
+  draft?: boolean;
+  showBack?: boolean;
+  backHref?: string;
+  backLabel?: string;
+  mainId?: string;
+  prev?: { href: string; label: string };
+  next?: { href: string; label: string };
+}
+
+const {
+  title,
+  pageTitle = `${title} · Tom Cheng`,
+  description = 'Tom Cheng. Software engineer building mixed reality and AI systems.',
+  eyebrow,
+  crumb,
+  lead,
+  draft = false,
+  showBack = true,
+  backHref = '/',
+  backLabel = '← Back to the desk',
+  mainId = 'page',
+  prev,
+  next,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    />
+  </head>
+  <body class="paper">
+    <main id={mainId}>
+      {showBack && (
+        <div class="bar">
+          <a href={backHref} class="back">{backLabel}</a>
+          {crumb && <span class="crumb">{crumb}</span>}
+        </div>
+      )}
+      <div class="sheet">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{title}</h1>
+        {lead && <p class="lead">{lead}</p>}
+        <slot />
+        {draft && <p class="draft">Draft text, written from your CV.</p>}
+        {(prev || next) && (
+          <div class="next">
+            {prev ? (
+              <a href={prev.href}><small>Previous</small>{prev.label}</a>
+            ) : (
+              <span />
+            )}
+            {next && (
+              <a href={next.href} style="text-align:right"><small>Next</small>{next.label}</a>
+            )}
+          </div>
+        )}
+      </div>
+    </main>
+    <slot name="overlay" />
+  </body>
+</html>
+
+<style is:global>
+  body.paper {
+    color-scheme: light;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  #page {
+    min-height: 100%;
+  }
+  .bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    background: rgba(243, 244, 240, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .bar .back {
+    background: var(--ink);
+    color: var(--paper);
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .bar .back:hover {
+    background: #000;
+  }
+  .bar .crumb {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: right;
+  }
+  .sheet {
+    max-width: 860px;
+    margin: 0 auto;
+    padding-block: 44px 72px;
+    padding-inline: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin: 0;
+  }
+  .sheet h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(40px, 8vw, 68px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .lead {
+    font-size: clamp(18px, 2.4vw, 21px);
+    line-height: 1.45;
+    max-width: 38em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .draft {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    border: 1px dashed #c4c8c0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0;
+    align-self: flex-start;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.1;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+  .card p {
+    margin: 0;
+    max-width: 62ch;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .chips li {
+    font-size: 13px;
+    border-radius: 999px;
+    padding: 3px 11px;
+    border: 1px solid var(--rule);
+    color: var(--ink-muted);
+  }
+  .chips.stat li {
+    background: #fdf1dc;
+    border-color: #f0d6a4;
+    color: #6e4204;
+    font-weight: 600;
+  }
+  .h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 24px;
+    margin: 14px 0 0;
+  }
+  .rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+  .rows li {
+    display: grid;
+    grid-template-columns: 8.5em 1fr;
+    gap: 4px 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rows .when {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .rows b {
+    font-weight: 600;
+  }
+  .rows small {
+    display: block;
+    font-size: 14.5px;
+    color: var(--ink-muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+  }
+  .grid figure {
+    margin: 0;
+    transition: transform 0.25s;
+  }
+  .grid figure:nth-child(odd) {
+    transform: rotate(-1.2deg);
+  }
+  .grid figure:nth-child(even) {
+    transform: rotate(1deg);
+  }
+  .grid figure:hover {
+    transform: rotate(0) scale(1.03);
+  }
+  .slot {
+    border: 1.5px dashed #c4c8c0;
+    border-radius: 16px;
+    padding: 24px;
+    color: var(--ink-muted);
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+  }
+  .empty {
+    border: 1.5px dashed #c4c8c0;
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--ink-muted);
+  }
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  .contact code {
+    font-family: var(--mono);
+    font-size: 15px;
+    user-select: all;
+    overflow-wrap: anywhere;
+  }
+  .contact button,
+  .contact a {
+    font-size: 14px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 14px;
+    background: none;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .contact button:hover,
+  .contact a:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .toc a {
+    text-align: left;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 18px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    border-color: var(--amber-deep);
+  }
+  .toc b {
+    font-family: var(--display);
+    font-size: 21px;
+  }
+  .toc span {
+    font-size: 14.5px;
+    color: var(--ink-muted);
+  }
+  .next {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+    margin-top: 18px;
+  }
+  .next a {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .next a:hover {
+    color: var(--amber-deep);
+  }
+  .next small {
+    display: block;
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 640px) {
+    .card {
+      padding: 20px;
+    }
+    .sheet {
+      padding-block: 30px 60px;
+    }
+    .rows li {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grid figure {
+      transition: none;
+    }
+  }
+</style>

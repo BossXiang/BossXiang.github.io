@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoPlaceholder from '../../components/PhotoPlaceholder.astro';
+import { SEC, prevNext } from '../../data/sections.ts';
+import { PHOTOS } from '../../data/photos.ts';
+
+const s = SEC.photos;
+const { prev, next } = prevNext('photos');
+---
+
+<BaseLayout title={s.title} eyebrow={s.thing} lead={s.lead} prev={prev} next={next} draft>
+  <div class="grid">
+    {PHOTOS.map((p, i) => (
+      <figure>
+        <PhotoPlaceholder kind={p.kind} flip={p.flip} index={i} />
+      </figure>
+    ))}
+  </div>
+  <p class="draft">These six are placeholders drawn in code. Your photographs replace them.</p>
+</BaseLayout>

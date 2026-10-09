@@ -1,0 +1,52 @@
+/* Shared design tokens: colours, type, spacing. One file, per CLAUDE.md. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+img {
+  max-width: 100%;
+}
+[hidden] {
+  display: none !important;
+}
+
+:root {
+  color-scheme: dark;
+  --night: #12141a; /* the room */
+  --night-ink: #eef0f2;
+  --night-muted: #9aa2ac;
+  --amber: #f2a33a; /* lamp light, the one accent */
+  --paper: #f3f4f0; /* reading pages */
+  --card: #ffffff;
+  --ink: #1b1f24;
+  --ink-muted: #5c656e;
+  --amber-deep: #a85f06; /* amber that reads on paper */
+  --rule: #dcdfd8;
+  --display: 'Bricolage Grotesque', 'Avenir Next', 'Segoe UI', sans-serif;
+  --body: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  background: var(--night);
+  color: var(--night-ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}

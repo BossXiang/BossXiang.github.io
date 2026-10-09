@@ -1,0 +1,61 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  sectionLabel: string;
+  sectionHref: string;
+  thing: string;
+  title: string;
+  meta?: string;
+  summary: string;
+  stats?: string[];
+  tags?: string[];
+  detail?: string;
+  link?: string;
+  draft?: boolean;
+}
+
+const {
+  sectionLabel,
+  sectionHref,
+  thing,
+  title,
+  meta,
+  summary,
+  stats = [],
+  tags = [],
+  detail,
+  link,
+  draft = false,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  eyebrow={thing}
+  crumb={sectionLabel}
+  backHref={sectionHref}
+  backLabel={`← Back to ${sectionLabel}`}
+  draft={draft}
+>
+  <article class="card">
+    {meta && <p class="meta">{meta}</p>}
+    <p>{summary}</p>
+    {detail && <p class="meta">{detail}</p>}
+    {link && (
+      <p>
+        <a href={link} target="_blank" rel="noopener">{link}</a>
+      </p>
+    )}
+    {stats.length > 0 && (
+      <ul class="chips stat">
+        {stats.map((s) => <li>{s}</li>)}
+      </ul>
+    )}
+    {tags.length > 0 && (
+      <ul class="chips">
+        {tags.map((t) => <li>{t}</li>)}
+      </ul>
+    )}
+  </article>
+</BaseLayout>

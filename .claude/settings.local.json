@@ -7,7 +7,9 @@
       "Bash(python3:*)",
       "Bash(gunzip:*)",
       "Bash(tar:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(grep -n \"^const\\\\|^let\\\\|^function\\\\|// ----\\\\|content\\\\s*$\\\\|^/\\\\* \" index.html)",
+      "Bash(pkill -f \"http.server 8123\")"
     ]
   }
 }

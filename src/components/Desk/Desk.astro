@@ -1,0 +1,165 @@
+---
+// The 3D desk — mounted only on the home page. Starts hidden; script.js
+// below reveals it (and hides the plain index) only once three.js has
+// actually managed to initialize WebGL, so a failed/no-JS visitor always
+// sees the plain index instead of a blank dark screen.
+interface Props {
+  sections: { key: string; label: string; href: string }[];
+}
+const { sections } = Astro.props;
+---
+
+<div id="app" hidden data-sections={JSON.stringify(sections)}>
+  <canvas id="stage" tabindex="-1" aria-label="A desk with objects. Each labelled object opens a section of the site."></canvas>
+  <div id="desk-ui">
+    <nav id="labels" aria-label="Sections"></nav>
+    <header class="brand"><b>Tom Cheng</b><span>Software engineer building mixed reality and AI systems</span></header>
+    <button id="btn-index" type="button">Index</button>
+    <p class="hint" id="hint">Everything on the desk can be picked up. The labelled things open.</p>
+  </div>
+</div>
+
+<style>
+  #app {
+    position: fixed;
+    inset: 0;
+    background: var(--night);
+  }
+  #stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    outline: none;
+  }
+  #desk-ui {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: var(--night-ink);
+  }
+  .brand {
+    position: absolute;
+    left: 18px;
+    top: 14px;
+    pointer-events: none;
+    max-width: calc(100% - 130px);
+  }
+  .brand b {
+    display: block;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.1;
+  }
+  .brand span {
+    display: block;
+    font-size: 13px;
+    color: var(--night-muted);
+    margin-top: 2px;
+  }
+  #btn-index {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    color: inherit;
+  }
+  #btn-index:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .hint {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    margin: 0;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--night-muted);
+    pointer-events: none;
+  }
+  #labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  :global(.label) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    background: rgba(18, 20, 26, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    padding: 5px 12px 5px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    color: var(--night-ink);
+    font: inherit;
+  }
+  :global(.label::before) {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex: none;
+  }
+  :global(.label.hot),
+  :global(.label:hover) {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(18, 20, 26, 0.92);
+  }
+</style>
+
+<script>
+  import { createDesk } from './scene.js';
+
+  const app = document.getElementById('app')!;
+  const canvas = document.getElementById('stage')! as HTMLCanvasElement;
+  const labelsEl = document.getElementById('labels')!;
+  const hintEl = document.getElementById('hint')!;
+  const plainIndex = document.getElementById('plain-index');
+  const indexBtn = document.getElementById('btn-index');
+  const sections = JSON.parse(app.dataset.sections || '[]');
+
+  try {
+    const desk = createDesk({ canvas, labelsEl, hintEl });
+    desk.boot(sections);
+    app.hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (plainIndex) plainIndex.hidden = true;
+    document.documentElement.dataset.deskReady = '1';
+    document.dispatchEvent(new CustomEvent('desk:ready'));
+  } catch (e) {
+    // WebGL unavailable — leave the plain index showing.
+    console.warn('Desk scene failed to start, falling back to the plain index.', e);
+  }
+
+  indexBtn?.addEventListener('click', () => {
+    app.hidden = true;
+    document.body.style.overflow = '';
+    if (plainIndex) plainIndex.hidden = false;
+  });
+</script>

@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import ItemPage from '../../layouts/ItemPage.astro';
+import { SEC } from '../../data/sections.ts';
+
+export async function getStaticPaths() {
+  const items = await getCollection('research', ({ data }) => !data.draft);
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const s = SEC.research;
+---
+
+<ItemPage
+  sectionLabel={s.label}
+  sectionHref="/research"
+  thing={s.thing}
+  title={item.data.title}
+  meta={item.data.date}
+  summary={item.data.summary}
+  link={item.data.link}
+  draft
+/>

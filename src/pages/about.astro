@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SEC, prevNext } from '../data/sections.ts';
+import { EMAIL, LINKEDIN, ABOUT } from '../data/about.ts';
+
+const s = SEC.about;
+const { prev, next } = prevNext('about');
+---
+
+<BaseLayout title={s.title} pageTitle="Tom Cheng" eyebrow={s.thing} lead={s.lead} prev={prev} next={next} draft>
+  <div class="contact">
+    <code id="email">{EMAIL}</code>
+    <button type="button" id="copy">Copy</button>
+    <a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+
+  <h2 class="h2">Education</h2>
+  <ul class="rows">
+    {ABOUT.education.map((e) => (
+      <li>
+        <span class="when">{e.when}</span>
+        <span><b>{e.title}</b><small>{e.detail}</small></span>
+      </li>
+    ))}
+  </ul>
+
+  <h2 class="h2">I work in</h2>
+  <ul class="chips">
+    {ABOUT.skills.map((s2) => <li>{s2}</li>)}
+  </ul>
+
+  <h2 class="h2">I speak</h2>
+  <ul class="chips">
+    {ABOUT.languages.map((l) => <li>{l}</li>)}
+  </ul>
+
+  <h2 class="h2">Away from the keyboard</h2>
+  <p style="margin:0;max-width:62ch">{ABOUT.awayFromKeyboard}</p>
+</BaseLayout>
+
+<script define:vars={{ email: EMAIL }}>
+  const btn = document.getElementById('copy');
+  btn?.addEventListener('click', () => {
+    const done = () => {
+      btn.textContent = 'Copied';
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+      }, 1600);
+    };
+    const select = () => {
+      const r = document.createRange();
+      r.selectNodeContents(document.getElementById('email'));
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+      btn.textContent = 'Selected';
+    };
+    try {
+      navigator.clipboard.writeText(email).then(done, select);
+    } catch (_) {
+      select();
+    }
+  });
+</script>

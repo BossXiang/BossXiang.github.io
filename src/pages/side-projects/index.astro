@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SEC, prevNext } from '../../data/sections.ts';
+
+const s = SEC['side-projects'];
+const { prev, next } = prevNext('side-projects');
+const items = (await getCollection('side-projects', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title={s.title} eyebrow={s.thing} lead={s.lead} prev={prev} next={next} draft>
+  <div class="stack">
+    {items.map((item) => (
+      <article class="card">
+        <h2><a href={`/side-projects/${item.id}`}>{item.data.title}</a></h2>
+        <p class="meta">{item.data.date}</p>
+        <p>{item.data.summary}</p>
+        {item.data.tags.length > 0 && (
+          <ul class="chips">
+            {item.data.tags.map((t) => <li>{t}</li>)}
+          </ul>
+        )}
+      </article>
+    ))}
+    <!-- Known placeholders (see README "Things that are placeholders"): a real
+         list of side projects hasn't been supplied yet. -->
+    <div class="slot">Your next project goes here. Game development and Solidity both appear on your CV and would fit.</div>
+    <div class="slot">And another.</div>
+  </div>
+</BaseLayout>
+
+<style>
+  .card h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .card h2 a:hover {
+    color: var(--amber-deep);
+  }
+</style>
