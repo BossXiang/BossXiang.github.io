@@ -248,7 +248,7 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
     const tip = new THREE.Group();
     tip.position.set(0, 0.03, 0.02);
     g.add(tip);
-    const pl = rbox(0.6, 0.21, 0.03, 0.012, M('#f4eede'));
+    const pl = rbox(0.6, 0.21, 0.03, 0.012, M('#d8d0b4'));
     pl.position.set(0, 0.105, 0);
     tip.add(pl);
     const face = new THREE.Mesh(new THREE.PlaneGeometry(0.57, 0.19), M('#ffffff', { map: nameTex, roughness: 0.9 }));
@@ -431,31 +431,17 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
     bulb.position.y = -0.13;
     bulb.userData.flat = true;
     head.add(bulb);
-    const pl = new THREE.PointLight(col('#ffb066'), 0, 3.4, 2);
-    pl.position.y = -0.2;
-    head.add(pl);
-    const glowCv = document.createElement('canvas');
-    glowCv.width = glowCv.height = 128;
-    const gctx = glowCv.getContext('2d'),
-      rg = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    rg.addColorStop(0, 'rgba(255,205,130,.6)');
-    rg.addColorStop(0.55, 'rgba(255,170,90,.22)');
-    rg.addColorStop(1, 'rgba(255,170,90,0)');
-    gctx.fillStyle = rg;
-    gctx.fillRect(0, 0, 128, 128);
-    const glowM = new THREE.MeshBasicMaterial({ map: tex(glowCv), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 });
-    const glow = new THREE.Mesh(new THREE.CircleGeometry(0.6, 32), glowM);
-    glow.rotation.x = -Math.PI / 2;
-    glow.position.set(0.46, 0.004, 0.39);
-    glow.userData.flat = true;
-    g.add(glow);
+    // The lamp is purely a trigger for the room's global day/night mood (see
+    // `lampMix` in the frame loop) — no local point light or glow pool, so
+    // it doesn't spotlight whatever happens to be nearby. The bulb itself
+    // still visibly lights up/dims as feedback, via its own unlit material.
     o.tall = 1.05;
-    o.parts = { bulbM, pl, head, glowM };
+    o.parts = { bulbM, head };
+    let glowK = 1;
     return (dt, t) => {
       const k = lampState.on ? 1 : 0;
-      pl.intensity += (k * 1.5 - pl.intensity) * Math.min(1, dt * 8);
-      bulbM.color.copy(col('#fff0cf')).multiplyScalar(0.12 + pl.intensity * 1.3);
-      glowM.opacity = Math.min(1, pl.intensity / 1.5) * 0.85;
+      glowK += (k - glowK) * Math.min(1, dt * 8);
+      bulbM.color.copy(col('#fff0cf')).multiplyScalar(0.12 + glowK * 1.9);
       head.rotation.z = Math.sin(t * 9) * 0.05 * o.h;
     };
   });
@@ -579,7 +565,9 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
   rim.position.set(4, 3, -5);
   scene.add(rim);
   const DAYLIGHT = col('#ffdca3'),
-    MOONLIGHT = col('#5d76ab');
+    MOONLIGHT = col('#46608f');
+  const BG_DAY = col('#1c1912'),
+    BG_NIGHT = col('#0b0d12');
   let lampMix = 1;
 
   /* ---- post ---- */
@@ -588,10 +576,30 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
   composer.addPass(new RenderPass(scene, camera));
   composer.addPass(new UnrealBloomPass(new THREE.Vector2(4, 4), 0.22, 0.4, 2.1));
   const finalPass = new ShaderPass({
-    uniforms: { tDiffuse: { value: null }, time: { value: 0 }, exposure: { value: 0.55 } },
+    uniforms: { tDiffuse: { value: null }, time: { value: 0 }, exposure: { value: 0.55 }, mood: { value: 1 } },
     vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    // `mood` is lampMix (0 = lamp off / day, 1 = lamp on / night). The day/night
+    // read leans on a deliberate colour grade — a warm amber lift by day, a
+    // desaturated cool teal push by night, plus a deeper vignette at night —
+    // rather than only on raw light intensity, which ACES + bloom compress
+    // into something barely perceptible.
     fragmentShader:
-      'uniform sampler2D tDiffuse;uniform float time,exposure;varying vec2 vUv;vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}void main(){vec3 c=texture2D(tDiffuse,vUv).rgb*exposure;c=aces(c);c=pow(c,vec3(1./2.2));vec2 d=vUv-.5;c*=1.-.75*dot(d,d);c+=(h(vUv*vec2(1920.,1080.)+fract(time)*60.)-.5)*.016;gl_FragColor=vec4(c,1.);}',
+      'uniform sampler2D tDiffuse;uniform float time,exposure,mood;varying vec2 vUv;' +
+      'vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}' +
+      'float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}' +
+      'void main(){' +
+      'vec3 c=texture2D(tDiffuse,vUv).rgb*exposure;' +
+      'c=aces(c);' +
+      'c=pow(c,vec3(1./2.2));' +
+      'vec3 dayGrade=vec3(1.1,1.0,0.86);' +
+      'vec3 nightGrade=vec3(0.74,0.86,1.14);' +
+      'c*=mix(dayGrade,nightGrade,mood);' +
+      'float g=dot(c,vec3(.299,.587,.114));' +
+      'c=mix(c,vec3(g),mood*.22);' +
+      'vec2 d=vUv-.5;' +
+      'c*=1.-(.62+mood*.4)*dot(d,d);' +
+      'c+=(h(vUv*vec2(1920.,1080.)+fract(time)*60.)-.5)*.016;' +
+      'gl_FragColor=vec4(c,1.);}',
   });
   composer.addPass(finalPass);
 
@@ -833,11 +841,20 @@ export function createDesk({ canvas, labelsEl, hintEl }) {
   function tick(dt, draw) {
     time += dt;
     finalPass.uniforms.time.value = time;
-    // lamp mood
+    // lamp mood — a deliberate day/night "look", not just a brightness dial.
+    // The scene lights move moderately (kept well clear of the exposure that
+    // blows out flat light-coloured objects like the nameplate); the real
+    // day/night read comes from finalPass's colour grade + vignette + the
+    // void background, which can't be swallowed by tonemapping the way raw
+    // light intensity was.
     lampMix = damp(lampMix, lampState.on ? 1 : 0, 6, dt);
-    key.intensity = 1.2 - lampMix * 0.98;
+    key.intensity = 0.85 - lampMix * 0.5;
     key.color.copy(DAYLIGHT).lerp(MOONLIGHT, lampMix);
-    hemi.intensity = 0.62 - lampMix * 0.32;
+    hemi.intensity = 0.62 - lampMix * 0.3;
+    rim.intensity = 0.26 + lampMix * 0.3;
+    scene.background.copy(BG_DAY).lerp(BG_NIGHT, lampMix);
+    finalPass.uniforms.mood.value = lampMix;
+    finalPass.uniforms.exposure.value = 0.62 - lampMix * 0.22;
 
     objs.forEach((o) => {
       const active = hover === o || drag === o || labelHover === o;

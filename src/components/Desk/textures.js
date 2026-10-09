@@ -307,7 +307,9 @@ export function nameCanvas() {
   const cv = mk(960, 320);
   const draw = () => {
     const c = cv.getContext('2d');
-    c.fillStyle = '#f4eede';
+    // Kept a touch off pure-white: a big flat plane this close to white
+    // clips to a blown-out highlight the instant it faces the key light.
+    c.fillStyle = '#d8d0b4';
     c.fillRect(0, 0, 960, 320);
     c.textAlign = 'center';
     c.textBaseline = 'alphabetic';
