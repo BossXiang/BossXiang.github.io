@@ -1,0 +1,123 @@
+---
+// A one-shot, full-viewport "arriving by paper plane" intro, played once on
+// page load. Pure CSS (no JS, no page-transition machinery) so it works
+// identically whether the page was reached from the desk, a link, or a
+// direct visit/reload — and costs nothing on every other page.
+---
+
+<div class="flight-intro" aria-hidden="true">
+  <div class="cloud cloud-a"></div>
+  <div class="cloud cloud-b"></div>
+  <div class="cloud cloud-c"></div>
+  <svg class="intro-plane" viewBox="0 0 64 32">
+    <path class="intro-plane-body" d="M44,0 L-36,22 L-12,0 L-36,-22 Z" />
+    <path class="intro-plane-fold" d="M-12,0 L44,0" />
+  </svg>
+</div>
+
+<style>
+  .flight-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, #bfe0f0 0%, #dfeeea 55%, var(--paper) 100%);
+  }
+  .cloud {
+    position: absolute;
+    border-radius: 999px;
+    background: #ffffff;
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  .cloud-a {
+    width: 22vw;
+    height: 6vw;
+    top: 18%;
+    left: -10%;
+  }
+  .cloud-b {
+    width: 16vw;
+    height: 5vw;
+    top: 52%;
+    left: 60%;
+  }
+  .cloud-c {
+    width: 12vw;
+    height: 4vw;
+    top: 72%;
+    left: 15%;
+  }
+  .intro-plane {
+    position: absolute;
+    width: 90px;
+    height: 45px;
+    left: 0;
+    top: 0;
+  }
+  .intro-plane-body {
+    fill: var(--amber-deep);
+  }
+  .intro-plane-fold {
+    stroke: #fff6e8;
+    stroke-width: 2;
+    opacity: 0.7;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .flight-intro {
+      animation: intro-fade 1.7s ease-in both;
+    }
+    .cloud-a {
+      animation: drift 1.7s ease-out both;
+    }
+    .cloud-b {
+      animation: drift 1.7s ease-out 0.05s both;
+    }
+    .cloud-c {
+      animation: drift 1.7s ease-out 0.1s both;
+    }
+    .intro-plane {
+      animation: plane-swoop 1.7s cubic-bezier(0.3, 0, 0.18, 1) both;
+    }
+  }
+
+  @keyframes intro-fade {
+    0%,
+    52% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes drift {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(14vw);
+    }
+  }
+  @keyframes plane-swoop {
+    0% {
+      opacity: 0;
+      transform: translate(-20vw, 78vh) scale(0.7) rotate(10deg);
+    }
+    14% {
+      opacity: 1;
+    }
+    48% {
+      transform: translate(28vw, 30vh) scale(1.1) rotate(-6deg);
+    }
+    78% {
+      transform: translate(76vw, 48vh) scale(1.6) rotate(5deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(132vw, -4vh) scale(2.6) rotate(-10deg);
+    }
+  }
+</style>

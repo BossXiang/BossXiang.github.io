@@ -49,7 +49,11 @@ const sideProjects = defineCollection({
 
 const travel = defineCollection({
   loader: loader('travel'),
-  schema: z.object(base),
+  schema: z.object({
+    ...base,
+    lat: z.number(),
+    lon: z.number(),
+  }),
 });
 
 const writing = defineCollection({

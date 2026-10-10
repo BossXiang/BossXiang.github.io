@@ -1,0 +1,160 @@
+---
+// A simplified, stylised world map (equirectangular, same landmass shapes
+// and projection as the desk globe's texture — src/components/Desk/
+// textures.js globeCanvas() — so the two stay visually consistent) with a
+// pin per place. Deliberately not a real/precise map, matching the rest of
+// the site's hand-drawn, toy-like visual language.
+interface Props {
+  pins: { lat: number; lon: number; label: string; href?: string }[];
+}
+const { pins } = Astro.props;
+
+const W = 1024;
+const H = 512;
+const X = (lon: number) => ((lon + 180) / 360) * W;
+const Y = (lat: number) => ((90 - lat) / 180) * H;
+
+// Rough continent silhouettes as ellipses: [lon, lat, widthDeg, heightDeg].
+const LAND = [
+  [-104, 50, 34, 17],
+  [-92, 28, 13, 11],
+  [-112, 36, 10, 8],
+  [-60, -14, 15, 23],
+  [-70, 6, 9, 8],
+  [20, 6, 19, 25],
+  [26, -22, 10, 12],
+  [12, 49, 15, 8],
+  [32, 58, 22, 10],
+  [90, 54, 46, 17],
+  [104, 28, 22, 13],
+  [78, 20, 9, 11],
+  [45, 27, 10, 9],
+  [134, -25, 15, 9],
+  [-40, 73, 12, 7],
+  [114, 2, 9, 5],
+  [138, 37, 4, 7],
+].map(([lon, lat, w, h]) => ({
+  cx: X(lon),
+  cy: Y(lat),
+  rx: (w / 360) * W,
+  ry: (h / 180) * H,
+}));
+
+const dots = pins.map((p) => ({ ...p, x: X(p.lon), y: Y(p.lat) }));
+---
+
+<div class="map-card">
+  <svg class="world-map" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="World map with pins for the places listed below">
+    <rect width={W} height={H} class="ocean" />
+    {LAND.map((b) => (
+      <ellipse cx={b.cx} cy={b.cy} rx={b.rx} ry={b.ry} class="land" />
+    ))}
+    {dots.map((p) => {
+      const Tag = p.href ? 'a' : 'g';
+      return (
+        <Tag href={p.href} class="pin">
+          <title>{p.label}</title>
+          <circle cx={p.x} cy={p.y} r="15" class="pin-ring" />
+          <circle cx={p.x} cy={p.y} r="9" class="pin-dot" />
+          <text x={p.x} y={p.y - 18} class="pin-label">{p.label}</text>
+        </Tag>
+      );
+    })}
+    <g class="paper-plane" aria-hidden="true">
+      <path class="paper-plane-body" d="M22,0 L-18,11 L-6,0 L-18,-11 Z" />
+      <path class="paper-plane-fold" d="M-6,0 L22,0" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .map-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .world-map {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .ocean {
+    fill: #e7eeec;
+  }
+  .land {
+    fill: #cec5aa;
+  }
+  .pin {
+    cursor: pointer;
+  }
+  .pin-ring {
+    fill: var(--amber);
+    opacity: 0.28;
+  }
+  .pin-dot {
+    fill: var(--amber-deep);
+    stroke: var(--card);
+    stroke-width: 3;
+    transition: r 0.15s;
+  }
+  .pin:hover .pin-dot,
+  .pin:focus-visible .pin-dot {
+    r: 11;
+  }
+  .pin:hover .pin-ring,
+  .pin:focus-visible .pin-ring {
+    opacity: 0.45;
+  }
+  .pin-label {
+    font-family: var(--mono);
+    font-size: 20px;
+    text-anchor: middle;
+    fill: var(--ink);
+    paint-order: stroke;
+    stroke: var(--card);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+
+  /* A paper plane glides across the map once, on entering the page. */
+  .paper-plane {
+    opacity: 0;
+    transform: translate(-60px, 420px) rotate(6deg);
+  }
+  .paper-plane-body {
+    fill: var(--amber-deep);
+  }
+  .paper-plane-fold {
+    stroke: var(--card);
+    stroke-width: 1.5;
+    opacity: 0.6;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .paper-plane {
+      animation: fly-across 2.6s cubic-bezier(0.3, 0, 0.2, 1) 0.4s both;
+    }
+  }
+  @keyframes fly-across {
+    0% {
+      opacity: 0;
+      transform: translate(-60px, 420px) rotate(10deg) scale(0.85);
+    }
+    10% {
+      opacity: 1;
+    }
+    35% {
+      transform: translate(290px, 90px) rotate(-8deg) scale(1.05);
+    }
+    60% {
+      transform: translate(610px, 300px) rotate(8deg) scale(1);
+    }
+    85% {
+      transform: translate(900px, 60px) rotate(-6deg) scale(0.95);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(1150px, 160px) rotate(4deg) scale(0.85);
+    }
+  }
+</style>

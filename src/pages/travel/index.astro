@@ -1,14 +1,24 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorldMap from '../../components/WorldMap.astro';
+import FlightIntro from '../../components/FlightIntro.astro';
 import { SEC, prevNext } from '../../data/sections.ts';
 
 const s = SEC.travel;
 const { prev, next } = prevNext('travel');
 const items = (await getCollection('travel', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const pins = items.map((item) => ({
+  lat: item.data.lat,
+  lon: item.data.lon,
+  label: item.data.title,
+  href: `/travel/${item.id}`,
+}));
 ---
 
 <BaseLayout title={s.title} eyebrow={s.thing} lead={s.lead} prev={prev} next={next} draft>
+  <FlightIntro slot="overlay" />
+  <WorldMap pins={pins} />
   <ul class="rows">
     {items.map((item) => (
       <li>
